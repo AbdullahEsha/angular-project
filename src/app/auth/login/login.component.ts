@@ -39,24 +39,18 @@ export class LoginComponent {
       return;
     }
 
-    fetch('http://localhost:5000/api/v1/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(this.loginForm.value),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.message.includes('successful')) {
-          console.log('Login response 🧨:', data);
-          localStorage.setItem('accessToken', data.accessToken);
-          localStorage.setItem('user', JSON.stringify(data.user));
+    this.http
+      .post('http://localhost:5000/api/v1/auth/login', this.loginForm.value)
+      .subscribe({
+        next: (response: any) => {
+          console.log('Login response 🧨:', response);
+          localStorage.setItem('accessToken', response.accessToken);
+          localStorage.setItem('user', JSON.stringify(response.user));
           this.router.navigate(['/admin']);
-        }
-      })
-      .catch((err) => {
-        console.error('Login error:', err);
+        },
+        error: (err) => {
+          console.error('Login error:', err);
+        },
       });
   }
 }

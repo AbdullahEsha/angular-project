@@ -8,7 +8,6 @@ import {
 } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
-
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -16,7 +15,6 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
-
 export class RegisterComponent {
   registerForm: FormGroup;
   submitted = false;
@@ -34,8 +32,6 @@ export class RegisterComponent {
   }
 
   onSubmit() {
-    console.log('Register form submitted:', this.registerForm.value);
-
     if (
       this.registerForm.value.name === '' ||
       this.registerForm.value.email === '' ||
@@ -45,22 +41,21 @@ export class RegisterComponent {
       return;
     }
 
-    fetch('http://localhost:5000/api/v1/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(this.registerForm.value),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log('Register response:', data);
-        if (data.success) {
-          this.router.navigate(['/login']);
-        }
-      })
-      .catch((err) => {
-        console.error('Register error:', err);
+    this.http
+      .post(
+        'http://localhost:5000/api/v1/auth/register',
+        this.registerForm.value
+      )
+      .subscribe({
+        next: (response: any) => {
+          console.log('Register response:', response);
+          if (response.success) {
+            this.router.navigate(['/login']);
+          }
+        },
+        error: (err) => {
+          console.error('Register error:', err);
+        },
       });
   }
 }
